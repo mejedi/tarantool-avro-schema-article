@@ -18,7 +18,6 @@ Traditionally, query interpretor overheads were dwarfed by slow disk access time
 But nowdays, with the vast amounts of RAM available, interpretor overheads
 became significant.
 JIT compilation is a widely used technique to improve interpretors' performance.
-
 We'd like to share our experience of leveraging JIT compilation
 to improve performance of some data processing tasks in Tarantool.
 
