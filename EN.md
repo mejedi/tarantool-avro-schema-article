@@ -38,6 +38,7 @@ These bits are restored later using a schema.
 Finally, there is a catch: a schema will evolve in time, so it is often necessary
 to convert data between schema revisions on the fly.
 
+We tried the conventional approach first, but results were disappointing.
 Due to the need for high performance, JIT compilation was deemed necessary.
 
 Though the developed solution is highly specific, the techniques we've learned
