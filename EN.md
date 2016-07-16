@@ -21,6 +21,12 @@ JIT compilation is a widely used technique to improve interpretors' performance.
 We'd like to share our experience of leveraging JIT compilation
 to improve performance of some data processing tasks in Tarantool.
 
+## About Tarantool
+
+Tarantool is a modern multi-paradigm database.
+
+`[TODO: extend this section, upto 3 statements]`
+
 ## The Problem
 
 We were tasked with building a JSON storage on top of Tarantool for a
@@ -39,3 +45,15 @@ are applicable to a wider range of tasks, including constraints enforcement
 and indexing of a semi-structured data.
 These are exciting directions, since we are actively working on document
 features in Tarantool.
+
+## Apache Avro Schema
+
+`[Plan: About Avro. Type system. Mapping schema versions.]`
+
+## Data Transformation: Execution Model
+
+`[Plan: DOM vs SAX. Lightweight DOM (no pointers). Pocedural validation. Output. Schema mapping done in compile time. Reporting errors.]`
+
+## LuaJIT
+
+`[Plan: Dynamic languages make it easy to generate code in runtime. FFI extension to Lua. A stepping stone to JIT compilation.]`
