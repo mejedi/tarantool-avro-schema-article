@@ -5,8 +5,8 @@ Modern databases are very different from the 1970-s classics,
 due to such tectonic shifts as SSD drives arriving to the market,
 RAM prices dropping drastically
 and distributed computing becoming commonplace.
-
 We beleive there is another change currently underway.
+
 JIT compilation was a domain reserved for the die-hard compiler experts.
 LLVM project made it tractable for regular engineers.
 The project provides convenient tools to
