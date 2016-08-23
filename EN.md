@@ -29,23 +29,62 @@ Tarantool is a modern multi-paradigm database.
 
 ## The Problem
 
-We were tasked with building a JSON storage on top of Tarantool for a
-major cellular operator.
-The structure of a JSON document is fully prescribed by a schema.
-A document is validated before insertion into the database.
-Some bits, like key names, are dropped prior to insert in order to optimize data footprint.
-These bits are restored later using a schema.
-Finally, there is a catch: a schema will evolve in time, so it is often necessary
-to convert data between schema revisions on the fly.
+Recently we've built a JSON storage on top of Tarantool for a
+major cellular operator. Incoming data is validated against a schema.
+The set of schemas may evolve in time.
+Assume the storage has an entity in schema **A** but a client wants it in schema **B**.
+Converting between different schema revisions transparently is a key feature.
 
-We tried the conventional approach first, but results were disappointing.
-Due to the need for high performance, JIT compilation was deemed necessary.
+Consider a simple JSON document below:
 
-Though the developed solution is highly specific, the techniques we've learned
-are applicable to a wider range of tasks, including constraints enforcement
-and indexing of a semi-structured data.
-These are exciting directions, since we are actively working on document
-features in Tarantool.
+```json
+{
+  "FirstName": "John",
+  "LastName":  "Doe"
+}
+```
+
+The document is validated against a schema (we've adopted Apache Avro notation):
+
+```json
+{
+    "name": "Person",
+    "type": "record",
+    "fields": [
+        { "name": "FirstName", "type": "string" },
+        { "name": "LastName",  "type": "string" }
+    ]
+}
+```
+
+A process we call *flatten* yields a compact tuple.
+This tuple goes into storage.
+Omiting key names significantly reduces data footprint.
+Names are recovered from the schema when necessary.
+
+```json
+[ "John", "Doe" ]
+```
+
+Row format in Tarantool is flexible:
+the number of fields in a row and individual field types may vary from row to row.
+Only those fields participating in indexes have type restrictions attached.
+This flexible data model makes it possible to store entities in different schema
+revisions side by side.
+
+Implementing *flatten* and the inverse transformation is challenging.
+The convert data between different schema revisions on the fly.
+Another tricky feature is *field defaults*: if a field was omitted, a default value from schema definition is used.
+
+Initially the project used the stock Apache Avro C library. The library implements a generic data handling machinery which consults schema definition in runtime, very similar to a programming language's interpretor. Unfortunately, the performance was unsatisfactory, which could be attributed to frequent memory allocation, lots of indirection and the interpretor's overheads.
+
+We explored code generation next. For each schema, the specialised code implementing data transformations was generated. These efforts plus designing an efficient data handling runtime resulted in a major speedup. The generator was written in Lua and produced Lua code. Dynamic languages make it realy easy to generate code in runtime. Since the output was a human-readable Lua code, debugging was relatively easy. Finally we implemented a new backend in Terra (Lua dialect) targeting LLVM and got yet another impressive speedup. See the following sections for more details.
+
+`[Image: performance during project lifetime]`
+
+The final version exceeded 3M *flatten* OPs/sec on a single core of a circa 2014 MacBook Pro (2.2 GHz Core i7 processor). The benchmark used a somewhat simple schema with 14 fields, 2 nested records plus a 4 element string array. Performance scales almost lineary with a schema complexity. It's not uncommon to encounter a 140 field schema in the wild. With such a complex schema the projected performance is 300K OPs/sec. Assuming that at most 10% of the running time is alloted for data processing and the remaining 90% are spent for other things, it translates into 30K OPs/sec.
+
+It means that the project met its performance goals (10K OPs/sec on a single core).
 
 ## Apache Avro Schema
 
@@ -58,3 +97,13 @@ features in Tarantool.
 ## LuaJIT
 
 `[Plan: Dynamic languages make it easy to generate code in runtime. FFI extension to Lua. A stepping stone to JIT compilation.]`
+
+## Conclusion
+
+`[...]`
+
+Though the developed solution is highly specific, the techniques we've learned
+are applicable to a wider range of tasks, including constraints enforcement
+and indexing of a semi-structured data.
+These are exciting directions, since we are actively working on document
+features and SQL in Tarantool.
