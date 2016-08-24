@@ -73,7 +73,7 @@ This flexible data model makes it possible to store entities in different schema
 revisions side by side.
 
 Implementing *flatten* and the inverse transformation is challenging.
-The convert data between different schema revisions on the fly.
+The routines convert data between different schema revisions on the fly.
 Another tricky feature is *field defaults*: if a field was omitted, a default value from schema definition is used.
 
 Initially the project used the stock Apache Avro C library. The library implements a generic data handling machinery which consults schema definition in runtime, very similar to a programming language's interpretor. Unfortunately, the performance was unsatisfactory, which could be attributed to frequent memory allocation, lots of indirection and the interpretor's overheads.
