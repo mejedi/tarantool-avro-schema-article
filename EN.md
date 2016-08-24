@@ -78,13 +78,13 @@ Another tricky feature is *field defaults*: if a field was omitted, a default va
 
 Initially the project used the stock Apache Avro C library. The library implements a generic data handling machinery which consults schema definition in runtime, very similar to a programming language's interpretor. Unfortunately, the performance was unsatisfactory, which could be attributed to frequent memory allocation, lots of indirection and the interpretor's overheads.
 
-We explored code generation next. For each schema, the specialised code implementing data transformations was generated. These efforts plus designing an efficient data handling runtime resulted in a major speedup. The generator was written in Lua and produced Lua code. Dynamic languages make it realy easy to generate code in runtime. Since the output was a human-readable Lua code, debugging was relatively easy. Finally we implemented a new backend in Terra (Lua dialect) targeting LLVM and got yet another impressive speedup. See the following sections for more details.
+We explored code generation next. For each schema, the specialised code implementing data transformations was generated. These efforts plus designing an efficient data handling runtime resulted in a major speedup. The generator was written in Lua and produced Lua code. Dynamic languages make it realy easy to generate code in runtime! Since the output was a human-readable Lua code, debugging was relatively easy. Finally we implemented a new backend in Terra (Lua dialect) targeting LLVM and got yet another impressive speedup. See the following sections for more details.
 
 ![Performance during project's lifetime](https://github.com/mejedi/tarantool-avro-schema-article/blob/master/avro_perf.png?raw=true)
 
-The version employing LLVM exceeded 3M *flatten* OPs/sec on a single core of a circa 2014 MacBook Pro (2.2 GHz Core i7 processor). The benchmark used a somewhat simple schema with 14 fields, 2 nested records plus a 4 element string array. Performance scales almost lineary with a schema complexity. It's not uncommon to encounter a 140 field schema in the wild. With such a complex schema the projected performance is 300K OPs/sec. Assuming that at most 10% of the running time is alloted for data processing and the remaining 90% are spent for other things, it translates into 30K OPs/sec.
+The version employing LLVM exceeded 3M *flatten* OPs/sec on a single core of a circa 2014 MacBook Pro (2.2 GHz Core i7 processor). The benchmark used a somewhat simple schema with 14 fields, 2 nested records plus a 4 element string array. Performance scales almost lineary with a schema complexity. It's not uncommon to encounter a 140 field schema in the wild. With such a complex schema the projected performance is 300K OPs/sec. Assuming that only 10% of the running time is alloted for data processing and the remaining 90% are spent doing other things, it translates into 30K OPs/sec.
 
-It means that the project met its performance goals (10K OPs/sec on a single core).
+It means that the project even exceeded its performance goals of 10K OPs/sec on a single core!
 
 ## Apache Avro Schema
 
