@@ -84,7 +84,7 @@ We explored code generation next. For each schema, the specialised code implemen
 
 The version employing LLVM exceeded 3M *flatten* OPs/sec on a single core of a circa 2014 MacBook Pro (2.2 GHz Core i7 processor). The benchmark used a somewhat simple schema with 14 fields, 2 nested records plus a 4 element string array. Performance scales almost lineary with a schema complexity. It's not uncommon to encounter a 140 field schema in the wild. With such a complex schema the projected performance is 300K OPs/sec. Assuming that only 10% of the running time is alloted for data processing and the remaining 90% are spent doing other things, it translates into 30K OPs/sec.
 
-It means that the project ultimately suceeded, exceeding its performance goals of 10K OPs/sec on a single core.
+It means that the project ultimately suceeded, exceeding its performance goals of 10K OPs/sec on a single core. We'd also like to share our experience of leveraging JIT-compilation techniques in terms of development costs, check out *Conslusion* section.
 
 ## Apache Avro Schema
 
